@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html><head><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mobile Debug</title>
+<style>body{font-family:monospace;font-size:14px;padding:10px;background:#222;color:#0f0;}
+pre{white-space:pre-wrap;word-break:break-all;}</style>
+</head><body>
+<h2>Mobile Debug</h2>
+<div id="info"></div>
+<script>
+var d = document.getElementById('info');
+function log(msg) { d.innerHTML += msg + '<br>'; }
+log('Width: ' + window.innerWidth + 'px');
+log('Height: ' + window.innerHeight + 'px');
+log('UA: ' + navigator.userAgent.substring(0,80));
+log('---');
+
+// Load jQuery and check slick
+var jq = document.createElement('script');
+jq.src = '/js/jquery.min.js';
+jq.onload = function() {
+  log('jQuery loaded: ' + typeof jQuery);
+  var sl = document.createElement('script');
+  sl.src = '/js/slick.min.js';
+  sl.onload = function() {
+    log('Slick loaded');
+    // Load mobile.js
+    var mj = document.createElement('script');
+    mj.src = '/js/mobile.js?v=' + Date.now();
+    mj.onload = function() { log('mobile.js loaded'); };
+    mj.onerror = function() { log('mobile.js FAILED to load'); };
+    document.head.appendChild(mj);
+  };
+  document.head.appendChild(sl);
+};
+document.head.appendChild(jq);
+
+// Fetch mobile.css and check its content
+fetch('/css/mobile.css?v=' + Date.now()).then(function(r){return r.text();}).then(function(t){
+  log('mobile.css size: ' + t.length + ' chars, lines: ' + t.split('\n').length);
+  log('Has comp-kkohl36g: ' + (t.indexOf('comp-kkohl36g') >= 0));
+  log('Has julian-gallery: ' + (t.indexOf('julian-gallery') >= 0));
+  log('Has contact-section: ' + (t.indexOf('contact-section') >= 0));
+});
+
+// Fetch mobile.js and check its content
+fetch('/js/mobile.js?v=' + Date.now()).then(function(r){return r.text();}).then(function(t){
+  log('mobile.js size: ' + t.length + ' chars, lines: ' + t.split('\n').length);
+  log('Has fixGallery: ' + (t.indexOf('fixGallery') >= 0));
+  log('Has fixContactSection: ' + (t.indexOf('fixContactSection') >= 0));
+  log('Has retryCount: ' + (t.indexOf('retryCount') >= 0));
+  log('Has slick-slide selector: ' + (t.indexOf('slick-slide') >= 0));
+  log('Has slick-carousel selector: ' + (t.indexOf('slick-carousel') >= 0));
+  log('First 200 chars: ' + t.substring(0,200));
+});
+</script></body></html>

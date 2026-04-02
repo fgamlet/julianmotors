@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Mobile Test</title>
+<style>*{margin:0;padding:0}body{background:#333;display:flex;flex-direction:column;align-items:center;padding:10px}
+#log{color:#0f0;font:11px monospace;background:#000;padding:8px;width:700px;margin-bottom:8px;max-height:200px;overflow:auto;white-space:pre-wrap;}
+iframe{width:375px;height:550px;border:2px solid #fff;border-radius:20px;}</style>
+</head><body>
+<div id="log">Loading...</div>
+<iframe src="/ru/" id="mf"></iframe>
+<script>
+var mf = document.getElementById('mf');
+var log = document.getElementById('log');
+var timer = setInterval(function() {
+  try {
+    var doc = mf.contentDocument;
+    if (!doc) return;
+    var gallery = doc.querySelector('.julian-gallery-container');
+    if (!gallery) return;
+    clearInterval(timer);
+    gallery.scrollIntoView({block:'center'});
+    var msgs = [];
+    msgs.push('Gallery: FOUND');
+    msgs.push('children: ' + gallery.children.length);
+    msgs.push('scrollWidth: ' + gallery.scrollWidth);
+    msgs.push('clientWidth: ' + gallery.clientWidth);
+    msgs.push('overflowX: ' + mf.contentWindow.getComputedStyle(gallery).overflowX);
+    msgs.push('height: ' + gallery.offsetHeight);
+    msgs.push('First img w: ' + (gallery.children[0] ? gallery.children[0].offsetWidth : 'none'));
+    log.textContent = msgs.join('\n');
+  } catch(e) { log.textContent = 'Error: ' + e.message; }
+}, 500);
+</script>
+</body></html>
